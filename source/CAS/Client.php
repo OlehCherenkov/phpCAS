@@ -361,7 +361,8 @@ class CAS_Client
         phpCAS::traceBegin();
         // the URL is build only when needed
         if ( empty($this->_server['login_url']) ) {
-            $this->_server['login_url'] = $this->_buildQueryUrl($this->_getServerBaseURL().'login','service='.urlencode($this->getURL()));
+            $provider = request()->query('provider');
+            $this->_server['login_url'] = $this->_buildQueryUrl($this->_getServerBaseURL().'login','provider='. $provider .'&service='.urlencode($this->getURL()));
         }
         $url = $this->_server['login_url'];
         if ($renew) {
@@ -462,7 +463,7 @@ class CAS_Client
                 break;
             case CAS_VERSION_2_0:
                 $this->_server['service_validate_url'] = $this->_getServerBaseURL()
-                .'serviceValidate';
+                .'proxyValidate';
                 break;
             case CAS_VERSION_3_0:
                 $this->_server['service_validate_url'] = $this->_getServerBaseURL()
@@ -1890,8 +1891,8 @@ class CAS_Client
         $cas_url = $this->getServerLogoutURL();
         $paramSeparator = '?';
         if (isset($params['url'])) {
-            $cas_url = $cas_url . $paramSeparator . "url="
-                . urlencode($params['url']);
+            $cas_url = $cas_url . $paramSeparator . "destination="
+                . urlencode($params['url']). '&gateway=true';
             $paramSeparator = '&';
         }
         if (isset($params['service'])) {
